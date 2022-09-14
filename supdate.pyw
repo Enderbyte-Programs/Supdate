@@ -4,6 +4,7 @@ import sys
 import json
 import os
 import requests
+from packaging import version
 VERSION = 2
 def handleexc(type,value,traceback):
     r = Tk()
@@ -62,7 +63,18 @@ try:
     UDATA = requests.get(NEWDREF).json()
     V = UDATA["version"]
     DLINK = UDATA["link"]
+    CHG = UDATA["changelog"]
 except:
     messagebox.showerror("Supdate","An Internet connection is required")
     sys.exit(-1)
-
+_ly = '\n'.join(CHG)
+if version.parse(V) > version.parse(LDATA["currentversion"]):
+    if not SILENT:
+        if messagebox.askyesno("Supdate",f"A new update is available for {LDATA['appname']}.\n\nYour Version: {LDATA['currentversion']}.\nNewest Version: {V}\nChangeset:\n{_ly}"):
+            pass
+        else:
+            sys.exit()
+else:
+    if not SILENT:
+        messagebox.showinfo("Supdate","No new updates are available")
+        sys.exit()
